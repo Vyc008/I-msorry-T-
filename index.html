@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời cuối cho em</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Quicksand:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f5f0;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+        }
+
+        #btn-container {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.8s ease;
+            z-index: 10;
+        }
+
+        #start-btn {
+            font-family: 'Dancing Script', cursive;
+            font-size: 5.5rem;
+            color: #8e8d8a;
+            user-select: none;
+            line-height: 1;
+            display: block;
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        .click-hint {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: #b5b3b0;
+            text-transform: uppercase;
+            margin-top: -10px;
+            opacity: 0.6;
+            transition: all 0.4s ease;
+        }
+
+        #btn-container:hover #start-btn {
+            color: #d8ac9c;
+            transform: translateY(-10px);
+            text-shadow: 0 10px 20px rgba(216, 172, 156, 0.3);
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        #paper {
+            display: none;
+            width: 85%;
+            max-width: 600px;
+            background: #fff;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            position: relative;
+            min-height: 450px;
+            opacity: 0;
+            transition: opacity 2s ease;
+            border-radius: 2px;
+            z-index: 5;
+        }
+
+        #paper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(#fff, #fff 34px, #f0f0f0 35px);
+            z-index: 1;
+        }
+
+        #content {
+            position: relative;
+            z-index: 2;
+            line-height: 35px;
+            font-size: 1.1rem;
+            color: #444;
+            white-space: pre-wrap;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2rem;
+            background: #d8ac9c;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .heart {
+            position: fixed;
+            top: -10%;
+            font-size: 20px;
+            color: #d8ac9c;
+            user-select: none;
+            z-index: 1;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music">
+        <source src="nhac.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="btn-container">
+        <div id="start-btn">hello</div>
+        <div class="click-hint">click</div>
+    </div>
+
+    <div id="paper">
+        <div id="content"></div>
+    </div>
+
+    <script>
+        const btnContainer = document.getElementById('btn-container');
+        const paper = document.getElementById('paper');
+        const content = document.getElementById('content');
+        const music = document.getElementById('bg-music');
+
+        // Nội dung lời nhắn mới
+        const message = "I... I'm sorry, my dear!\n\nTiếc là chúng mình đã hết duyên với nhau rồi, anh hứa đây là lần cuối cùng anh làm em đau và cũng là lần cuối cùng anh xin lỗi em.\n\nAnh chưa đủ tốt để đem lại hạnh phúc cho em, để cho em phải thiệt thòi, nhưng tình cảm của anh dành cho em là Thật. Anh không muốn để cho em phải chịu những tổn thương như vậy nữa, anh nghĩ chọn rời đi khỏi cuộc đời của em là lựa chọn tốt nhất.\n\nAnh Xin Lỗi em. Mong em tìm được người tốt hơn anh, em xứng đáng được yêu thương, anh biết mình chả xứng đáng được yêu thương. Chúc em sống tốt ngày nào cũng hạnh phúc vui vẻ, Tạm biệt 🥹.\n\n\nV🥀🖕";
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️‍🩹';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.opacity = Math.random();
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        btnContainer.addEventListener('click', () => {
+            music.play().catch(e => console.log("Không thể phát nhạc tự động:", e));
+            
+            const heartInterval = setInterval(createHeart, 300);
+            btnContainer.style.opacity = '0';
+            
+            setTimeout(() => {
+                btnContainer.style.display = 'none';
+                paper.style.display = 'block';
+                setTimeout(() => paper.style.opacity = '1', 100);
+                setTimeout(typeWriter, 1500);
+            }, 800);
+
+            let i = 0;
+            // Sử dụng Array.from để xử lý emoji (đặc biệt là emoji phức tạp) không bị lỗi font
+            const characters = Array.from(message);
+
+            function typeWriter() {
+                if (i < characters.length) {
+                    // Hiển thị nội dung hiện tại
+                    content.textContent = characters.slice(0, i + 1).join('');
+                    
+                    // Thêm con trỏ đánh chữ
+                    const cursorSpan = document.createElement('span');
+                    cursorSpan.classList.add('cursor');
+                    content.appendChild(cursorSpan);
+                    
+                    i++;
+                    let speed = Math.floor(Math.random() * (80 - 40 + 1)) + 50;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    const cursor = document.querySelector('.cursor');
+                    if (cursor) cursor.style.opacity = '0';
+                    setTimeout(() => clearInterval(heartInterval), 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
